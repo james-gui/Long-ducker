@@ -19,7 +19,7 @@ Technologies Used
 Installation
 1. Clone the repository
 
-git clone https://github.com/yourusername/rubber-duck-auction.git
+git clone https://github.com/james-gui/Long-ducker
 cd rubber-duck-auction
 2. Install dependencies
 
