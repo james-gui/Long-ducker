@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Auction Admin - Ducker Art Trail</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-header h2 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .admin-tabs {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-tab {
+      padding: 0.75rem 1.5rem;
+      background-color: #f0f0f0;
+      color: var(--text-dark);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .admin-tab.active {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .admin-tab:hover:not(.active) {
+      background-color: #e0e0e0;
+    }
+    
+    .admin-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .btn-success {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2e7d32;
+    }
+    
+    .btn-warning {
+      background-color: #f57c00;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #ef6c00;
+    }
+    
+    .table-container {
+      overflow-x: auto;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      background-color: var(--bg-white);
+    }
+    
+    th, td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    
+    thead th {
+      background-color: #f2f2f2;
+      font-weight: 600;
+      color: var(--text-dark);
+      font-family: var(--font-heading);
+      position: sticky;
+      top: 0;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    
+    .highest-bid {
+      background-color: #e8f5e9 !important;
+    }
+    
+    .summary-card {
+      background-color: var(--bg-white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .summary-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .stat-card {
+      background-color: var(--bg-subtle);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .stat-title {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+      font-size: a.5rem;
+      font-weight: 600;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+    }
+    
+    .duck-selector {
+      margin-bottom: 1.5rem;
+    }
+    
+    .duck-select {
+      padding: 0.75rem;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 400px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+    }
+    
+    .duck-select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    h3 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .last-refreshed {
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .admin-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ducker Art Trail Ducks Auction</h1>
+    <p>Admin Dashboard</p>
+  </header>
+  
+  <main class="admin-container">
+    <div class="admin-header">
+      <h2>Auction Management</h2>
+      <div class="admin-actions">
+        <button id="refreshBtn" class="btn btn-primary">Refresh Data</button>
+        <button id="exportBtn" class="btn btn-success">Export to CSV</button>
+        <a href="/admin/manage-ducks" class="btn btn-primary">Manage Ducks</a>
+        <a href="/" class="btn btn-warning">View Live Auction</a>
+      </div>
+    </div>
+    
+    <div class="last-refreshed">Last refreshed: <span id="lastRefreshedTime">Just now</span></div>
+    
+    <div class="admin-tabs">
+      <div class="admin-tab active" data-tab="all-bids">All Bids</div>
+      <div class="admin-tab" data-tab="duck-bids">Duck-Specific Bids</div>
+    </div>
+    
+    <div id="all-bids-content">
+      <div class="summary-card">
+        <div class="summary-title">Auction Summary</div>
+        <div class="summary-stats">
+          <div class="stat-card">
+            <div class="stat-title">Total Ducks</div>
+            <div class="stat-value" id="summaryTotalDucks">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Highest Overall Bid</div>
+            <div class="stat-value" id="summaryHighestBid">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Bids</div>
+            <div class="stat-value" id="summaryTotalBids">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Bidders</div>
+            <div class="stat-value" id="summaryTotalBidders">0</div>
+          </div>
+        </div>
+      </div>
+      
+      <h3>All Bids</h3>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Duck Name</th>
+              <th>Bidder Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Bid Amount</th>
+              <th>Time</th>
+              <th>Agreement</th>
+            </tr>
+          </thead>
+          <tbody id="allBidsTableBody">
+            <!-- Bid data will be inserted here -->
+            <tr>
+              <td colspan="7" style="text-align: center;">Loading bid data...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <div id="duck-bids-content" style="display: none;">
+      <div class="duck-selector">
+        <label for="duckSelect">Select a Duck:</label>
+        <select id="duckSelect" class="duck-select">
+          <option value="">-- Select a Duck --</option>
+        </select>
+      </div>
+      
+      <div class="summary-card" id="duckSummary" style="display: none;">
+        <div class="summary-title">Duck Auction Summary</div>
+        <div class="summary-stats">
+          <div class="stat-card">
+            <div class="stat-title">Duck Name</div>
+            <div class="stat-value" id="duckName">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Starting Bid</div>
+            <div class="stat-value" id="duckStartingBid">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Highest Bid</div>
+            <div class="stat-value" id="duckHighestBid">HK$0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Bids</div>
+            <div class="stat-value" id="duckTotalBids">0</div>
+          </div>
+        </div>
+      </div>
+      
+      <h3>Bids for Selected Duck</h3>
+      
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Bid Amount</th>
+              <th>Time</th>
+              <th>Agreement</th>
+            </tr>
+          </thead>
+          <tbody id="duckBidsTableBody">
+            <!-- Duck-specific bid data will be inserted here -->
+            <tr>
+              <td colspan="7" style="text-align: center;">Select a duck to view bids</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Harrow International School. All proceeds go to charity.</p>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elements
+      const tabButtons = document.querySelectorAll('.admin-tab');
+      const allBidsContent = document.getElementById('all-bids-content');
+      const duckBidsContent = document.getElementById('duck-bids-content');
+      const allBidsTableBody = document.getElementById('allBidsTableBody');
+      const duckBidsTableBody = document.getElementById('duckBidsTableBody');
+      const duckSelect = document.getElementById('duckSelect');
+      const duckSummary = document.getElementById('duckSummary');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const exportBtn = document.getElementById('exportBtn');
+      const lastRefreshedTime = document.getElementById('lastRefreshedTime');
+      
+      // Summary elements
+      const summaryTotalDucks = document.getElementById('summaryTotalDucks');
+      const summaryHighestBid = document.getElementById('summaryHighestBid');
+      const summaryTotalBids = document.getElementById('summaryTotalBids');
+      const summaryTotalBidders = document.getElementById('summaryTotalBidders');
+      
+      // Duck summary elements
+      const duckNameElement = document.getElementById('duckName');
+      const duckStartingBidElement = document.getElementById('duckStartingBid');
+      const duckHighestBidElement = document.getElementById('duckHighestBid');
+      const duckTotalBidsElement = document.getElementById('duckTotalBids');
+      
+      // Format time ago
+      function timeAgo(date) {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) return interval + ' years ago';
+        
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return interval + ' months ago';
+        
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return interval + ' days ago';
+        if (interval === 1) return 'yesterday';
+        
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return interval + ' hours ago';
+        if (interval === 1) return '1 hour ago';
+        
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return interval + ' minutes ago';
+        if (interval === 1) return '1 minute ago';
+        
+        return 'just now';
+      }
+      
+      // Update "last refreshed" time
+      function updateLastRefreshed() {
+        const now = new Date();
+        lastRefreshedTime.textContent = timeAgo(now);
+        
+        // Set up interval to update the "time ago" text every minute
+        setInterval(() => {
+          lastRefreshedTime.textContent = timeAgo(now);
+        }, 60000);
+      }
+      
+      // Tab switching
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          const tabName = button.dataset.tab;
+          
+          if (tabName === 'all-bids') {
+            allBidsContent.style.display = 'block';
+            duckBidsContent.style.display = 'none';
+          } else if (tabName === 'duck-bids') {
+            allBidsContent.style.display = 'none';
+            duckBidsContent.style.display = 'block';
+          }
+        });
+      });
+      
+      // Fetch all ducks for dropdown
+      async function fetchDucks() {
+        try {
+          const response = await fetch('/api/admin/ducks');
+          if (!response.ok) {
+            throw new Error('Failed to fetch ducks');
+          }
+          
+          const ducks = await response.json();
+          
+          // Populate duck dropdown
+          duckSelect.innerHTML = '<option value="">-- Select a Duck --</option>';
+          
+          ducks.forEach(duck => {
+            const duckId = duck._id || duck.id;
+            duckSelect.innerHTML += `
+              <option value="${duckId}">${duck.name}</option>
+            `;
+          });
+          
+          // Update summary
+          summaryTotalDucks.textContent = ducks.length;
+          
+          return ducks;
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to fetch ducks. Please try again.');
+          return [];
+        }
+      }
+      
+      // Fetch all bids
+      async function fetchAllBids() {
+        try {
+          const response = await fetch('/api/admin/bids');
+          if (!response.ok) {
+            throw new Error('Failed to fetch bids');
+          }
+          
+          const bids = await response.json();
+          displayAllBids(bids);
+          updateSummary(bids);
+          
+          return bids;
+        } catch (error) {
+          console.error('Error:', error);
+          allBidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: red;">
+                Error loading bids. Please try again.
+              </td>
+            </tr>
+          `;
+          return [];
+        }
+      }
+      
+      // Fetch bids for a specific duck
+      async function fetchDuckBids(duckId) {
+        try {
+          const response = await fetch(`/api/admin/bids/${duckId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch bids for duck');
+          }
+          
+          const bids = await response.json();
+          displayDuckBids(bids);
+          
+          return bids;
+        } catch (error) {
+          console.error('Error:', error);
+          duckBidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: red;">
+                Error loading bids for this duck. Please try again.
+              </td>
+            </tr>
+          `;
+          return [];
+        }
+      }
+      
+      // Display all bids
+      function displayAllBids(bids) {
+        if (bids.length === 0) {
+          allBidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center;">No bids yet</td>
+            </tr>
+          `;
+          return;
+        }
+        
+        // Sort bids by amount (highest first)
+        bids.sort((a, b) => b.amount - a.amount);
+        
+        allBidsTableBody.innerHTML = bids.map((bid, index) => {
+          const isHighest = index === 0;
+          const date = new Date(bid.timestamp);
+          const formattedDate = date.toLocaleString();
+          
+          // Get duck name
+          let duckName = 'Unknown Duck';
+          if (bid.duckId && typeof bid.duckId === 'object') {
+            duckName = bid.duckId.name;
+          }
+          
+          return `
+            <tr class="${isHighest ? 'highest-bid' : ''}">
+              <td>${duckName}</td>
+              <td>${bid.fullName}</td>
+              <td>${bid.email}</td>
+              <td>${bid.phoneNumber}</td>
+              <td>HK$${bid.amount}</td>
+              <td>${formattedDate}</td>
+              <td>${bid.agreementConfirmed ? '✓' : '✗'}</td>
+            </tr>
+          `;
+        }).join('');
+      }
+      
+      // Display bids for a specific duck
+      function displayDuckBids(bids) {
+        if (bids.length === 0) {
+          duckBidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center;">No bids for this duck yet</td>
+            </tr>
+          `;
+          return;
+        }
+        
+        // Sort bids by amount (highest first)
+        bids.sort((a, b) => b.amount - a.amount);
+        
+        duckBidsTableBody.innerHTML = bids.map((bid, index) => {
+          const isHighest = index === 0;
+          const date = new Date(bid.timestamp);
+          const formattedDate = date.toLocaleString();
+          
+          return `
+            <tr class="${isHighest ? 'highest-bid' : ''}">
+              <td>${index + 1}</td>
+              <td>${bid.fullName}</td>
+              <td>${bid.email}</td>
+              <td>${bid.phoneNumber}</td>
+              <td>HK$${bid.amount}</td>
+              <td>${formattedDate}</td>
+              <td>${bid.agreementConfirmed ? '✓' : '✗'}</td>
+            </tr>
+          `;
+        }).join('');
+        
+        // Update duck summary
+        if (bids.length > 0) {
+          duckHighestBidElement.textContent = `HK$${bids[0].amount}`;
+        } else {
+          duckHighestBidElement.textContent = `HK$0`;
+        }
+        
+        duckTotalBidsElement.textContent = bids.length.toString();
+      }
+      
+      // Update summary statistics
+      function updateSummary(bids) {
+        if (bids.length === 0) {
+          summaryHighestBid.textContent = 'HK$0';
+          summaryTotalBids.textContent = '0';
+          summaryTotalBidders.textContent = '0';
+          return;
+        }
+        
+        // Highest bid
+        const highestBid = bids.reduce((max, bid) => bid.amount > max ? bid.amount : max, 0);
+        summaryHighestBid.textContent = `HK$${highestBid}`;
+        
+        // Total bids
+        summaryTotalBids.textContent = bids.length.toString();
+        
+        // Unique bidders (by email)
+        const uniqueBidders = new Set(bids.map(bid => bid.email)).size;
+        summaryTotalBidders.textContent = uniqueBidders.toString();
+      }
+      
+      // Update duck summary
+      async function updateDuckSummary(duckId) {
+        try {
+          // Fetch duck details
+          const response = await fetch(`/api/ducks/${duckId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch duck details');
+          }
+          
+          const duck = await response.json();
+          
+          duckNameElement.textContent = duck.name;
+          duckStartingBidElement.textContent = `HK$${duck.startingBid}`;
+          duckSummary.style.display = 'block';
+          
+          return duck;
+        } catch (error) {
+          console.error('Error:', error);
+          duckSummary.style.display = 'none';
+          return null;
+        }
+      }
+      
+      // Export data as CSV
+      function exportCSV(bids) {
+        // Create CSV header
+        let csv = 'Duck Name,Bidder Name,Email,Phone,Bid Amount (HK$),Time,Agreement Confirmed\n';
+        
+        // Sort bids by amount (highest first)
+        bids.sort((a, b) => b.amount - a.amount);
+        
+        bids.forEach(bid => {
+          const date = new Date(bid.timestamp);
+          const formattedDate = date.toLocaleString();
+          
+          // Get duck name
+          let duckName = 'Unknown Duck';
+          if (bid.duckId && typeof bid.duckId === 'object') {
+            duckName = bid.duckId.name;
+          }
+          
+          const row = [
+            `"${duckName}"`,
+            `"${bid.fullName}"`,
+            `"${bid.email}"`,
+            `"${bid.phoneNumber}"`,
+            bid.amount,
+            `"${formattedDate}"`,
+            bid.agreementConfirmed ? 'Yes' : 'No'
+          ];
+          
+          csv += row.join(',') + '\n';
+        });
+        
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `duck-auction-bids-${new Date().toISOString().split('T')[0]}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+      
+      // Event listeners
+      refreshBtn.addEventListener('click', async () => {
+        await fetchDucks();
+        await fetchAllBids();
+        updateLastRefreshed();
+        
+        const selectedDuckId = duckSelect.value;
+        if (selectedDuckId) {
+          await fetchDuckBids(selectedDuckId);
+        }
+      });
+      
+      exportBtn.addEventListener('click', async () => {
+        try {
+          const response = await fetch('/api/admin/bids');
+          if (!response.ok) {
+            throw new Error('Failed to fetch bids');
+          }
+          
+          const bids = await response.json();
+          exportCSV(bids);
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to export data. Please try again.');
+        }
+      });
+      
+      duckSelect.addEventListener('change', async () => {
+        const duckId = duckSelect.value;
+        
+        if (duckId) {
+          await updateDuckSummary(duckId);
+          await fetchDuckBids(duckId);
+        } else {
+          duckSummary.style.display = 'none';
+          duckBidsTableBody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center;">Select a duck to view bids</td>
+            </tr>
+          `;
+        }
+      });
+      
+      // Initial data load
+      async function initialize() {
+        await fetchDucks();
+        await fetchAllBids();
+        updateLastRefreshed();
+      }
+      
+      initialize();
+      
+      // Auto-refresh every 30 seconds
+      setInterval(initialize, 30000);
+    });
+  </script>
+</body>
+</html>

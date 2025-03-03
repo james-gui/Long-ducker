@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Duck - Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-header h2 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .btn-success {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2e7d32;
+    }
+    
+    .btn-warning {
+      background-color: #f57c00;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #ef6c00;
+    }
+    
+    .form-container {
+      background-color: var(--bg-white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+    }
+    
+    .form-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      transition: border-color 0.2s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    textarea {
+      height: 150px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    
+    input[type="checkbox"] {
+      margin-top: 0.25rem;
+    }
+    
+    .image-preview-container {
+      margin-top: 1rem;
+    }
+    
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .preview-item {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-image {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      color: #d32f2f;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+    
+    .input-hint {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .time-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (max-width: 600px) {
+      .time-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .datetime-input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      transition: border-color 0.2s ease;
+      font-family: var(--font-body);
+    }
+    
+    .datetime-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    .error-banner {
+      background-color: #ffebee;
+      color: #b71c1c;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+      border-left: 4px solid #b71c1c;
+      display: none;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ducker Art Trail Ducks Auction</h1>
+    <p>Admin Dashboard - Add New Duck</p>
+  </header>
+  
+  <main class="admin-container">
+    <div class="admin-header">
+      <h2>Add New Duck</h2>
+      <a href="/admin/manage-ducks" class="btn btn-primary">Back to Duck Management</a>
+    </div>
+    
+    <div class="form-container">
+      <h3 class="form-title">Duck Information</h3>
+      
+      <div class="error-banner" id="formErrorBanner"></div>
+      
+      <form id="addDuckForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="name">Duck Name *</label>
+          <input type="text" id="name" name="name" required>
+          <div id="nameError" class="error-message"></div>
+        </div>
+        
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <textarea id="description" name="description" required></textarea>
+          <div id="descriptionError" class="error-message"></div>
+          <div class="input-hint">Provide a detailed description of the duck, including its design and special features.</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="startingBid">Starting Bid (HK$) *</label>
+          <input type="number" id="startingBid" name="startingBid" min="1" step="1" required>
+          <div id="startingBidError" class="error-message"></div>
+          <div class="input-hint">Set the minimum starting bid amount in Hong Kong Dollars.</div>
+        </div>
+        
+        <div class="form-group">
+          <label>Auction Time Period *</label>
+          <div class="time-inputs">
+            <div>
+              <label for="auctionStart">Start Date & Time</label>
+              <input type="datetime-local" id="auctionStart" name="auctionStart" class="datetime-input" required>
+              <div id="auctionStartError" class="error-message"></div>
+            </div>
+            <div>
+              <label for="auctionEnd">End Date & Time</label>
+              <input type="datetime-local" id="auctionEnd" name="auctionEnd" class="datetime-input" required>
+              <div id="auctionEndError" class="error-message"></div>
+            </div>
+          </div>
+          <div class="input-hint">Set when the auction will start and end. Bidding will only be allowed during this time period.</div>
+        </div>
+        
+        <div class="form-group">
+          <label for="images">Duck Images * (Upload at least one image, max 5)</label>
+          <input type="file" id="images" name="images" accept="image/*" multiple required>
+          <div id="imagesError" class="error-message"></div>
+          <div class="input-hint">Recommended image size: 1200 x 800 pixels. Maximum file size: 5MB per image.</div>
+          
+          <div class="image-preview-container">
+            <p>Image Preview:</p>
+            <div id="imagePreview" class="image-preview"></div>
+          </div>
+        </div>
+        
+        <div class="form-group checkbox-group">
+          <input type="checkbox" id="active" name="active" checked>
+          <label for="active">Make this duck active (visible to bidders)</label>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" id="cancelBtn" class="btn btn-warning">Cancel</button>
+          <button type="submit" class="btn btn-success">Add Duck</button>
+        </div>
+      </form>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Harrow International School. All proceeds go to charity.</p>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elements
+      const addDuckForm = document.getElementById('addDuckForm');
+      const formErrorBanner = document.getElementById('formErrorBanner');
+      const nameInput = document.getElementById('name');
+      const descriptionInput = document.getElementById('description');
+      const startingBidInput = document.getElementById('startingBid');
+      const auctionStartInput = document.getElementById('auctionStart');
+      const auctionEndInput = document.getElementById('auctionEnd');
+      const imagesInput = document.getElementById('images');
+      const imagePreview = document.getElementById('imagePreview');
+      const cancelBtn = document.getElementById('cancelBtn');
+      
+      // Error elements
+      const nameError = document.getElementById('nameError');
+      const descriptionError = document.getElementById('descriptionError');
+      const startingBidError = document.getElementById('startingBidError');
+      const auctionStartError = document.getElementById('auctionStartError');
+      const auctionEndError = document.getElementById('auctionEndError');
+      const imagesError = document.getElementById('imagesError');
+      
+      // Set minimum date time values to now
+      const now = new Date();
+      const nowString = now.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:MM
+      
+      auctionStartInput.min = nowString;
+      auctionEndInput.min = nowString;
+      
+      // Default start time to current time, end time to 7 days later
+      auctionStartInput.value = nowString;
+      
+      const oneWeekLater = new Date(now);
+      oneWeekLater.setDate(now.getDate() + 7);
+      auctionEndInput.value = oneWeekLater.toISOString().slice(0, 16);
+      
+      // Ensure end time is after start time
+      auctionStartInput.addEventListener('change', () => {
+        const startTime = new Date(auctionStartInput.value);
+        const endTime = new Date(auctionEndInput.value);
+        
+        if (endTime <= startTime) {
+          // Set end time to 1 day after start time
+          const newEndTime = new Date(startTime);
+          newEndTime.setDate(startTime.getDate() + 1);
+          auctionEndInput.value = newEndTime.toISOString().slice(0, 16);
+        }
+        
+        validateTimes();
+      });
+      
+      auctionEndInput.addEventListener('change', () => {
+        validateTimes();
+      });
+      
+      function validateTimes() {
+        const startTime = new Date(auctionStartInput.value);
+        const endTime = new Date(auctionEndInput.value);
+        const now = new Date();
+        
+        // Clear previous errors
+        auctionStartError.textContent = '';
+        auctionEndError.textContent = '';
+        
+        // Validate start time
+        if (startTime < now) {
+          auctionStartError.textContent = 'Start time must be in the future';
+        }
+        
+        // Validate end time
+        if (endTime <= startTime) {
+          auctionEndError.textContent = 'End time must be after start time';
+        }
+      }
+      
+      // Preview selected images
+      imagesInput.addEventListener('change', () => {
+        // Clear previous previews
+        imagePreview.innerHTML = '';
+        
+        if (imagesInput.files.length > 5) {
+          imagesError.textContent = 'You can only upload up to 5 images';
+          imagesInput.value = '';
+          return;
+        }
+        
+        if (imagesInput.files.length === 0) {
+          imagePreview.innerHTML = '<p>No images selected</p>';
+          return;
+        }
+        
+        imagesError.textContent = '';
+        
+        // Create preview for each selected file
+        Array.from(imagesInput.files).forEach((file, index) => {
+          const reader = new FileReader();
+          
+          reader.onload = function(e) {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-image';
+            img.alt = `Preview ${index + 1}`;
+            
+            previewItem.appendChild(img);
+            imagePreview.appendChild(previewItem);
+          }
+          
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      // Form submission
+      addDuckForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Clear previous errors
+        nameError.textContent = '';
+        descriptionError.textContent = '';
+        startingBidError.textContent = '';
+        auctionStartError.textContent = '';
+        auctionEndError.textContent = '';
+        imagesError.textContent = '';
+        formErrorBanner.style.display = 'none';
+        
+        // Validate form
+        let isValid = true;
+        
+        if (!nameInput.value.trim()) {
+          nameError.textContent = 'Duck name is required';
+          isValid = false;
+        }
+        
+        if (!descriptionInput.value.trim()) {
+          descriptionError.textContent = 'Description is required';
+          isValid = false;
+        }
+        
+        if (!startingBidInput.value || startingBidInput.value < 1) {
+          startingBidError.textContent = 'Starting bid must be at least HK$1';
+          isValid = false;
+        }
+        
+        // Validate time inputs
+        const startTime = new Date(auctionStartInput.value);
+        const endTime = new Date(auctionEndInput.value);
+        const now = new Date();
+        
+        if (!auctionStartInput.value) {
+          auctionStartError.textContent = 'Auction start time is required';
+          isValid = false;
+        } else if (startTime < now) {
+          auctionStartError.textContent = 'Start time must be in the future';
+          isValid = false;
+        }
+        
+        if (!auctionEndInput.value) {
+          auctionEndError.textContent = 'Auction end time is required';
+          isValid = false;
+        } else if (endTime <= startTime) {
+          auctionEndError.textContent = 'End time must be after start time';
+          isValid = false;
+        }
+        
+        if (!imagesInput.files || imagesInput.files.length === 0) {
+          imagesError.textContent = 'At least one image is required';
+          isValid = false;
+        }
+        
+        if (imagesInput.files.length > 5) {
+          imagesError.textContent = 'You can only upload up to 5 images';
+          isValid = false;
+        }
+        
+        if (!isValid) {
+          formErrorBanner.textContent = 'Please fix the errors in the form before submitting.';
+          formErrorBanner.style.display = 'block';
+          return;
+        }
+        
+        // Create form data
+        const formData = new FormData();
+        formData.append('name', nameInput.value.trim());
+        formData.append('description', descriptionInput.value.trim());
+        formData.append('startingBid', startingBidInput.value);
+        formData.append('auctionStart', startTime.toISOString());
+        formData.append('auctionEnd', endTime.toISOString());
+        formData.append('active', document.getElementById('active').checked);
+        
+        // Add all selected images
+        Array.from(imagesInput.files).forEach(file => {
+          formData.append('images', file);
+        });
+        
+        try {
+          const response = await fetch('/api/admin/ducks', {
+            method: 'POST',
+            body: formData
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to add duck');
+          }
+          
+          alert('Duck added successfully!');
+          window.location.href = '/admin/manage-ducks';
+        } catch (error) {
+          console.error('Error:', error);
+          formErrorBanner.textContent = error.message || 'Failed to add duck. Please try again.';
+          formErrorBanner.style.display = 'block';
+        }
+      });
+      
+      // Cancel button
+      cancelBtn.addEventListener('click', () => {
+        window.location.href = '/admin/manage-ducks';
+      });
+    });
+  </script>
+</body>
+</html>

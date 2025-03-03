@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Ducks - Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-header h2 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .admin-actions {
+      display: flex;
+      gap: 1rem;
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .btn-success {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2e7d32;
+    }
+    
+    .btn-warning {
+      background-color: #f57c00;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #ef6c00;
+    }
+    
+    .btn-danger {
+      background-color: #d32f2f;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background-color: #c62828;
+    }
+    
+    .btn-small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .duck-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .duck-card {
+      background-color: var(--bg-white);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .duck-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .duck-image-container {
+      position: relative;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .duck-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .duck-card:hover .duck-image {
+      transform: scale(1.05);
+    }
+    
+    .duck-status {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      z-index: 1;
+      font-family: var(--font-body);
+    }
+    
+    .status-active {
+      background-color: #e8f5e9;
+      color: #1b5e20;
+    }
+    
+    .status-upcoming {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+    }
+    
+    .status-ended {
+      background-color: #eeeeee;
+      color: #424242;
+    }
+    
+    .status-inactive {
+      background-color: #ffebee;
+      color: #b71c1c;
+    }
+    
+    .duck-content {
+      padding: 1.5rem;
+    }
+    
+    .duck-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    
+    .duck-name {
+      font-size: 1.5rem;
+      margin: 0;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .duck-bid-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .duck-bid-amount {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--accent-color);
+      font-family: var(--font-heading);
+    }
+    
+    .duck-bid-label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .no-bids {
+      color: #9e9e9e;
+      font-style: italic;
+    }
+    
+    .duck-description {
+      color: var(--text-medium);
+      margin-bottom: 1rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      font-weight: 300;
+    }
+    
+    .duck-details {
+      background-color: var(--bg-subtle);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .duck-detail {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+    
+    .duck-detail:last-child {
+      margin-bottom: 0;
+    }
+    
+    .detail-label {
+      color: var(--text-light);
+    }
+    
+    .detail-value {
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    .duck-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .loading-container {
+      text-align: center;
+      padding: 3rem;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .no-ducks-container {
+      text-align: center;
+      padding: 3rem;
+      background-color: var(--bg-subtle);
+      border-radius: var(--radius-md);
+    }
+    
+    .error-container {
+      text-align: center;
+      padding: 3rem;
+      background-color: #ffebee;
+      color: #b71c1c;
+      border-radius: var(--radius-md);
+    }
+    
+    .confirmation-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background-color: var(--bg-white);
+      padding: 2rem;
+      border-radius: var(--radius-md);
+      max-width: 500px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .modal-title {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: #d32f2f;
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .modal-message {
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+    
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .last-refreshed {
+      text-align: right;
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .admin-actions {
+        width: 100%;
+        flex-wrap: wrap;
+      }
+      
+      .duck-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .duck-bid-info {
+        align-items: flex-start;
+        margin-top: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ducker Art Trail Ducks Auction</h1>
+    <p>Admin Dashboard - Manage Ducks</p>
+  </header>
+  
+  <main class="admin-container">
+    <div class="admin-header">
+      <h2>Duck Management</h2>
+      <div class="admin-actions">
+        <a href="/admin/add-duck" class="btn btn-success">Add New Duck</a>
+        <button id="refreshBtn" class="btn btn-primary">Refresh Data</button>
+        <a href="/admin" class="btn btn-warning">Back to Dashboard</a>
+      </div>
+    </div>
+    
+    <div class="last-refreshed">Last refreshed: <span id="lastRefreshedTime">Just now</span></div>
+    
+    <div id="ducksContainer" class="duck-grid">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading ducks...</p>
+      </div>
+    </div>
+    
+    <div id="confirmationModal" class="confirmation-modal" style="display: none;">
+      <div class="modal-content">
+        <h3 class="modal-title">Confirm Removal</h3>
+        <p class="modal-message">Are you sure you want to remove this duck from the auction? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="cancelRemoveBtn" class="btn btn-primary">Cancel</button>
+          <button id="confirmRemoveBtn" class="btn btn-danger">Remove Duck</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Harrow International School. All proceeds go to charity.</p>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Elements
+      const ducksContainer = document.getElementById('ducksContainer');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const confirmationModal = document.getElementById('confirmationModal');
+      const cancelRemoveBtn = document.getElementById('cancelRemoveBtn');
+      const confirmRemoveBtn = document.getElementById('confirmRemoveBtn');
+      const lastRefreshedTime = document.getElementById('lastRefreshedTime');
+      
+      let duckToRemove = null;
+      
+      // Format date
+      function formatDate(date) {
+        return new Date(date).toLocaleString();
+      }
+      
+      // Format time ago
+      function timeAgo(date) {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        
+        let interval = Math.floor(seconds / 31536000);
+        if (interval > 1) return interval + ' years ago';
+        
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) return interval + ' months ago';
+        
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) return interval + ' days ago';
+        if (interval === 1) return 'yesterday';
+        
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) return interval + ' hours ago';
+        if (interval === 1) return '1 hour ago';
+        
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) return interval + ' minutes ago';
+        if (interval === 1) return '1 minute ago';
+        
+        return 'just now';
+      }
+      
+      // Update "last refreshed" time
+      function updateLastRefreshed() {
+        const now = new Date();
+        lastRefreshedTime.textContent = timeAgo(now);
+        
+        // Set up interval to update the "time ago" text every minute
+        setInterval(() => {
+          lastRefreshedTime.textContent = timeAgo(now);
+        }, 60000);
+      }
+      
+      // Get auction status
+      function getAuctionStatus(duck) {
+        const now = new Date();
+        const startDate = new Date(duck.auctionStart);
+        const endDate = new Date(duck.auctionEnd);
+        
+        if (!duck.active) {
+          return { text: "Inactive", class: "status-inactive" };
+        } else if (now < startDate) {
+          return { text: "Upcoming", class: "status-upcoming" };
+        } else if (now > endDate) {
+          return { text: "Ended", class: "status-ended" };
+        } else {
+          return { text: "Active", class: "status-active" };
+        }
+      }
+      
+      // Format date and time for display
+      function formatDateTime(dateString) {
+        const options = { 
+          year: 'numeric', 
+          month: 'short', 
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+      }
+      
+      // Fetch all ducks and their highest bids
+      async function fetchDucks() {
+        try {
+          ducksContainer.innerHTML = `
+            <div class="loading-container">
+              <div class="loading-spinner"></div>
+              <p>Loading ducks...</p>
+            </div>
+          `;
+          
+          // Fetch ducks and highest bids in parallel
+          const [ducksResponse, highestBidsResponse] = await Promise.all([
+            fetch('/api/admin/ducks'),
+            fetch('/api/admin/highest-bids')
+          ]);
+          
+          if (!ducksResponse.ok) {
+            throw new Error('Failed to fetch ducks');
+          }
+          
+          if (!highestBidsResponse.ok) {
+            throw new Error('Failed to fetch highest bids');
+          }
+          
+          const ducks = await ducksResponse.json();
+          const highestBids = await highestBidsResponse.json();
+          
+          displayDucks(ducks, highestBids);
+          updateLastRefreshed();
+        } catch (error) {
+          console.error('Error:', error);
+          ducksContainer.innerHTML = `
+            <div class="error-container">
+              <h3>Error Loading Ducks</h3>
+              <p>There was a problem fetching the duck data. Please try again.</p>
+              <p class="error-details">${error.message}</p>
+            </div>
+          `;
+        }
+      }
+      
+      // Display ducks with their highest bids
+      function displayDucks(ducks, highestBids) {
+        if (ducks.length === 0) {
+          ducksContainer.innerHTML = `
+            <div class="no-ducks-container">
+              <h3>No Ducks Available</h3>
+              <p>You haven't added any ducks to the auction yet.</p>
+              <a href="/admin/add-duck" class="btn btn-success">Add Your First Duck</a>
+            </div>
+          `;
+          return;
+        }
+        
+        // Sort ducks by auction status and time
+        const now = new Date();
+        
+        ducks.sort((a, b) => {
+          const aStatus = getAuctionStatus(a);
+          const bStatus = getAuctionStatus(b);
+          
+          // First sort by active status
+          if (aStatus.text === "Active" && bStatus.text !== "Active") {
+            return -1;
+          }
+          if (aStatus.text !== "Active" && bStatus.text === "Active") {
+            return 1;
+          }
+          
+          // Then by upcoming status
+          if (aStatus.text === "Upcoming" && bStatus.text !== "Upcoming") {
+            return -1;
+          }
+          if (aStatus.text !== "Upcoming" && bStatus.text === "Upcoming") {
+            return 1;
+          }
+          
+          // If both are active, sort by end time (soonest first)
+          if (aStatus.text === "Active" && bStatus.text === "Active") {
+            return new Date(a.auctionEnd) - new Date(b.auctionEnd);
+          }
+          
+          // If both are upcoming, sort by start time (soonest first)
+          if (aStatus.text === "Upcoming" && bStatus.text === "Upcoming") {
+            return new Date(a.auctionStart) - new Date(b.auctionStart);
+          }
+          
+          // Then by highest bid (highest first)
+          const aId = a._id || a.id;
+          const bId = b._id || b.id;
+          
+          const aBidAmount = highestBids[aId] ? highestBids[aId].amount : 0;
+          const bBidAmount = highestBids[bId] ? highestBids[bId].amount : 0;
+          
+          return bBidAmount - aBidAmount;
+        });
+        
+        ducksContainer.innerHTML = ducks.map(duck => {
+          const duckId = duck._id || duck.id;
+          const mainImage = duck.images[0];
+          
+          // Get highest bid info
+          const highestBid = highestBids[duckId];
+          
+          // Truncate description
+          let description = duck.description;
+          if (description.length > 120) {
+            description = description.substring(0, 117) + '...';
+          }
+          
+          // Format date
+          const createdDate = formatDate(duck.createdAt);
+          
+          // Format bid info
+          let bidInfo = '';
+          if (highestBid) {
+            const maskedBidderName = maskName(highestBid.bidderName);
+            const bidTime = timeAgo(highestBid.timestamp);
+            bidInfo = `
+              <div class="duck-bid-info">
+                <span class="duck-bid-amount">HK$${highestBid.amount}</span>
+                <span class="duck-bid-label">by ${maskedBidderName}, ${bidTime}</span>
+              </div>
+            `;
+          } else {
+            bidInfo = `
+              <div class="duck-bid-info">
+                <span class="duck-bid-amount no-bids">No bids yet</span>
+                <span class="duck-bid-label">Starting at HK$${duck.startingBid}</span>
+              </div>
+            `;
+          }
+          
+          // Get auction status
+          const status = getAuctionStatus(duck);
+          
+          return `
+            <div class="duck-card">
+              <div class="duck-image-container">
+                <div class="duck-status ${status.class}">
+                  ${status.text}
+                </div>
+                <img src="${mainImage}" alt="${duck.name}" class="duck-image">
+              </div>
+              <div class="duck-content">
+                <div class="duck-header">
+                  <h3 class="duck-name">${duck.name}</h3>
+                  ${bidInfo}
+                </div>
+                
+                <p class="duck-description">${description}</p>
+                
+                <div class="duck-details">
+                  <div class="duck-detail">
+                    <span class="detail-label">Starting Bid:</span>
+                    <span class="detail-value">HK$${duck.startingBid}</span>
+                  </div>
+                  <div class="duck-detail">
+                    <span class="detail-label">Auction Period:</span>
+                    <span class="detail-value">${formatDateTime(duck.auctionStart)} - ${formatDateTime(duck.auctionEnd)}</span>
+                  </div>
+                  <div class="duck-detail">
+                    <span class="detail-label">Added on:</span>
+                    <span class="detail-value">${createdDate}</span>
+                  </div>
+                  <div class="duck-detail">
+                    <span class="detail-label">Images:</span>
+                    <span class="detail-value">${duck.images.length}</span>
+                  </div>
+                </div>
+                
+                <div class="duck-actions">
+                  <a href="/duck/${duckId}" class="btn btn-primary btn-small" target="_blank">View Live</a>
+                  <a href="/admin/edit-duck/${duckId}" class="btn btn-warning btn-small">Edit</a>
+                  <button class="btn btn-danger btn-small remove-duck-btn" data-duck-id="${duckId}" data-duck-name="${duck.name}">
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+        
+        // Add event listeners to remove buttons
+        document.querySelectorAll('.remove-duck-btn').forEach(button => {
+          button.addEventListener('click', () => {
+            duckToRemove = {
+              id: button.dataset.duckId,
+              name: button.dataset.duckName
+            };
+            
+            document.querySelector('.modal-message').textContent = 
+              `Are you sure you want to remove "${duckToRemove.name}" from the auction? This action cannot be undone.`;
+            
+            confirmationModal.style.display = 'flex';
+          });
+        });
+      }
+      
+      // Helper function to mask bidder names
+      function maskName(fullName) {
+        if (!fullName) return 'Anonymous';
+        const names = fullName.trim().split(' ');
+        
+        if (names.length === 1) {
+          return names[0].charAt(0) + '*'.repeat(names[0].length - 1);
+        }
+        
+        const firstName = names[0].charAt(0) + '*'.repeat(names[0].length - 1);
+        const lastName = names[names.length - 1].charAt(0) + '*'.repeat(names[names.length - 1].length - 1);
+        
+        return `${firstName} ${lastName}`;
+      }
+      
+      // Remove a duck
+      async function removeDuck(duckId) {
+        try {
+          const response = await fetch(`/api/admin/ducks/${duckId}`, {
+            method: 'DELETE'
+          });
+          
+          if (!response.ok) {
+            throw new Error('Failed to remove duck');
+          }
+          
+          await fetchDucks();
+          alert('Duck removed successfully');
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Failed to remove duck. Please try again.');
+        }
+      }
+      
+      // Event listeners
+      refreshBtn.addEventListener('click', fetchDucks);
+      
+      cancelRemoveBtn.addEventListener('click', () => {
+        confirmationModal.style.display = 'none';
+        duckToRemove = null;
+      });
+      
+      confirmRemoveBtn.addEventListener('click', async () => {
+        if (duckToRemove) {
+          await removeDuck(duckToRemove.id);
+          confirmationModal.style.display = 'none';
+          duckToRemove = null;
+        }
+      });
+      
+      // Initial data load
+      fetchDucks();
+      
+      // Auto-refresh every 2 minutes
+      setInterval(fetchDucks, 120000);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duck Details - Ducker Art Trail</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .duck-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .image-gallery {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+    }
+    
+    .main-image-container {
+      position: relative;
+      height: 400px;
+      overflow: hidden;
+    }
+    
+    .main-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    
+    .thumbnails {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+    
+    .thumbnail {
+      width: 80px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0.7;
+      border: 2px solid transparent;
+    }
+    
+    .thumbnail.active {
+      opacity: 1;
+      border-color: var(--primary-color);
+    }
+    
+    .thumbnail:hover {
+      opacity: 1;
+    }
+    
+    .duck-info {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .duck-header {
+      margin-bottom: 1.5rem;
+    }
+    
+    .duck-name {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
+    }
+    
+    .duck-description {
+      color: var(--text-medium);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+    
+    .duck-details {
+      background-color: var(--bg-subtle);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+    }
+    
+    .detail-group {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+      align-items: center;
+    }
+    
+    .detail-group:last-child {
+      margin-bottom: 0;
+    }
+    
+    .detail-label {
+      font-weight: 500;
+      color: var(--text-light);
+    }
+    
+    .detail-value {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    
+    .current-bid {
+      background-color: var(--bg-white);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .current-bid-label {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+    
+    .current-bid-amount {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-color);
+      font-family: var(--font-heading);
+    }
+    
+    .current-bidder {
+      margin-top: 0.5rem;
+      color: var(--text-medium);
+      font-size: 0.9rem;
+    }
+    
+    .bidding-form {
+      background-color: var(--bg-white);
+      padding: 1.5rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      margin-top: auto;
+    }
+    
+    .form-title {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"] {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+    }
+    
+    input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    
+    input[type="checkbox"] {
+      margin-top: 0.25rem;
+    }
+    
+    .checkbox-label {
+      font-size: 0.9rem;
+      color: var(--text-medium);
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .success-message {
+      color: var(--accent-color);
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: none;
+    }
+    
+    .bid-button {
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-weight: 600;
+      width: 100%;
+      font-family: var(--font-body);
+    }
+    
+    .bid-button:hover {
+      background-color: #2e7d32;
+    }
+    
+    .loading-container {
+      text-align: center;
+      padding: 3rem;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Auction timing styles */
+    .auction-period {
+      display: flex;
+      justify-content: space-between;
+      background-color: var(--bg-subtle);
+      padding: 1rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+    }
+
+    .auction-period-item {
+      flex: 1;
+    }
+
+    .auction-period-label {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+
+    .auction-period-value {
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+
+    .auction-countdown {
+      text-align: center;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      background-color: var(--bg-white);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .countdown-label {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .countdown-timer {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .countdown-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+    }
+
+    .countdown-label {
+      font-size: 0.75rem;
+      color: var(--text-medium);
+    }
+
+    .status-active {
+      background-color: #e8f5e9;
+      color: #1b5e20;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-upcoming {
+      background-color: #e3f2fd;
+      color: #0d47a1;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-ended {
+      background-color: #eeeeee;
+      color: #424242;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-inactive {
+      background-color: #ffebee;
+      color: #b71c1c;
+      padding: 0.25rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .auction-message {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      margin-bottom: 1.5rem;
+      border-radius: var(--radius-sm);
+    }
+
+    .auction-message-icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+
+    .auction-message-content h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.2rem;
+    }
+
+    .auction-message-content p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-medium);
+    }
+
+    .auction-message.upcoming {
+      background-color: #e3f2fd;
+      border-left: 4px solid #0d47a1;
+    }
+
+    .auction-message.ended {
+      background-color: #eeeeee;
+      border-left: 4px solid #424242;
+    }
+
+    .auction-message.inactive {
+      background-color: #ffebee;
+      border-left: 4px solid #b71c1c;
+    }
+    
+    @media (max-width: 900px) {
+      .duck-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .main-image-container {
+        height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ducker Art Trail Ducks Auction</h1>
+    <p>Find the perfect duck and place your bid!</p>
+  </header>
+  
+  <main class="container" id="main-content">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading duck details...</p>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Harrow International School. All proceeds go to charity.</p>
+  </footer>
+  
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Get duck ID from URL
+      const duckId = window.location.pathname.split('/').pop();
+      const mainContent = document.getElementById('main-content');
+      const socket = io();
+      
+      // Socket events to handle bids
+      socket.emit('joinDuckRoom', duckId);
+      
+      socket.on('currentBid', (bidData) => {
+        // Update the current bid display
+        if (bidData.duckId === duckId) {
+          const bidAmountElement = document.getElementById('currentBidAmount');
+          const bidderElement = document.getElementById('currentBidder');
+          
+          if (bidAmountElement && bidderElement) {
+            bidAmountElement.textContent = `HK$${bidData.amount}`;
+            
+            if (bidData.bidder === 'No bids yet') {
+              bidderElement.textContent = 'No bids placed yet';
+            } else {
+              bidderElement.textContent = `Current highest bid by ${bidData.bidder}`;
+            }
+          }
+        }
+      });
+      
+      socket.on('bidError', (data) => {
+        const errorMessage = document.getElementById('errorMessage');
+        if (errorMessage) {
+          errorMessage.textContent = data.message;
+          errorMessage.style.display = 'block';
+          
+          // Hide error message after 5 seconds
+          setTimeout(() => {
+            errorMessage.style.display = 'none';
+          }, 5000);
+        }
+      });
+      
+      socket.on('bidSuccess', (data) => {
+        const successMessage = document.getElementById('successMessage');
+        if (successMessage) {
+          successMessage.textContent = data.message;
+          successMessage.style.display = 'block';
+          
+          // Reset form
+          document.getElementById('bidForm').reset();
+          
+          // Hide success message after 5 seconds
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+          }, 5000);
+        }
+      });
+      
+      try {
+        // Fetch duck details
+        const response = await fetch(`/api/ducks/${duckId}`);
+        if (!response.ok) {
+          throw new Error('Duck not found');
+        }
+        
+        const duck = await response.json();
+        
+        // Display duck details
+        mainContent.innerHTML = `
+          <div class="duck-container">
+            <div class="image-gallery">
+              <div class="main-image-container">
+                <img src="${duck.images[0]}" alt="${duck.name}" id="mainImage" class="main-image">
+              </div>
+              <div class="thumbnails">
+                ${duck.images.map((image, index) => `
+                  <img 
+                    src="${image}" 
+                    alt="Thumbnail ${index + 1}" 
+                    class="thumbnail ${index === 0 ? 'active' : ''}" 
+                    data-image="${image}" 
+                    onclick="changeMainImage(this)"
+                  >
+                `).join('')}
+              </div>
+            </div>
+            
+            <div class="duck-info">
+              <div class="duck-header">
+                <h2 class="duck-name">${duck.name}</h2>
+                <p class="duck-description">${duck.description}</p>
+              </div>
+              
+              <div class="duck-details">
+                <div class="detail-group">
+                  <div class="detail-label">Starting Bid</div>
+                  <div class="detail-value">HK$${duck.startingBid}</div>
+                </div>
+                
+                <div class="detail-group auction-timing">
+                  <div class="detail-label">Auction Status</div>
+                  <div class="detail-value" id="auctionStatus">Loading...</div>
+                </div>
+              </div>
+              
+              <div class="auction-period">
+                <div class="auction-period-item">
+                  <div class="auction-period-label">Starts</div>
+                  <div class="auction-period-value" id="auctionStart">-</div>
+                </div>
+                <div class="auction-period-item">
+                  <div class="auction-period-label">Ends</div>
+                  <div class="auction-period-value" id="auctionEnd">-</div>
+                </div>
+              </div>
+              
+              <div class="auction-countdown" id="auctionCountdown"></div>
+              
+              <div class="current-bid">
+                <div class="current-bid-label">Current Highest Bid</div>
+                <div class="current-bid-amount" id="currentBidAmount">HK$${duck.startingBid}</div>
+                <div class="current-bidder" id="currentBidder">No bids placed yet</div>
+              </div>
+              
+              <div class="bidding-form">
+                <h3 class="form-title">Place Your Bid</h3>
+                
+                <form id="bidForm">
+                  <div class="form-group">
+                    <label for="bidAmount">Your Bid (HK$)</label>
+                    <input type="number" id="bidAmount" name="bidAmount" min="${duck.startingBid + 1}" step="1" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="fullName">Your Name</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" required>
+                  </div>
+                  
+                  <div class="form-group checkbox-group">
+                    <input type="checkbox" id="agreementConfirmed" name="agreementConfirmed" required>
+                    <label for="agreementConfirmed" class="checkbox-label">
+                      I agree to the terms and conditions. If my bid wins, I commit to completing the purchase.
+                    </label>
+                  </div>
+                  
+                  <button type="submit" class="bid-button">Place Bid</button>
+                  
+                  <div class="error-message" id="errorMessage"></div>
+                  <div class="success-message" id="successMessage"></div>
+                </form>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Add auction timing info
+        const startDate = new Date(duck.auctionStart);
+        const endDate = new Date(duck.auctionEnd);
+        const now = new Date();
+
+        document.getElementById('auctionStart').textContent = startDate.toLocaleString();
+        document.getElementById('auctionEnd').textContent = endDate.toLocaleString();
+
+        // Determine auction status
+        let auctionStatus;
+        let countdownTarget;
+        let countdownMessage;
+
+        if (!duck.active) {
+          auctionStatus = "Inactive";
+          document.getElementById('auctionStatus').innerHTML = `<span class="status-inactive">Inactive</span>`;
+          document.getElementById('auctionCountdown').textContent = 'This auction is not active.';
+        } else if (now < startDate) {
+          auctionStatus = "Upcoming";
+          countdownTarget = startDate;
+          countdownMessage = "Auction starts in";
+          document.getElementById('auctionStatus').innerHTML = `<span class="status-upcoming">Upcoming</span>`;
+        } else if (now > endDate) {
+          auctionStatus = "Ended";
+          document.getElementById('auctionStatus').innerHTML = `<span class="status-ended">Ended</span>`;
+          document.getElementById('auctionCountdown').textContent = 'This auction has ended.';
+        } else {
+          auctionStatus = "Active";
+          countdownTarget = endDate;
+          countdownMessage = "Auction ends in";
+          document.getElementById('auctionStatus').innerHTML = `<span class="status-active">Active Now</span>`;
+        }
+
+        // Update bidding form based on auction status
+        const bidForm = document.getElementById('bidForm');
+        const bidFormContainer = document.querySelector('.bidding-form');
+
+        if (auctionStatus !== "Active") {
+          // If not active, disable the form and show a message
+          const formFields = bidForm.querySelectorAll('input, textarea, button');
+          formFields.forEach(field => {
+            field.disabled = true;
+          });
+          
+          if (auctionStatus === "Upcoming") {
+            bidFormContainer.insertAdjacentHTML('afterbegin', `
+              <div class="auction-message upcoming">
+                <div class="auction-message-icon">⏳</div>
+                <div class="auction-message-content">
+                  <h3>Auction Hasn't Started Yet</h3>
+                  <p>Bidding will be available when the auction starts on ${startDate.toLocaleString()}</p>
+                </div>
+              </div>
+            `);
+          } else if (auctionStatus === "Ended") {
+            bidFormContainer.insertAdjacentHTML('afterbegin', `
+              <div class="auction-message ended">
+                <div class="auction-message-icon">🏁</div>
+                <div class="auction-message-content">
+                  <h3>Auction Has Ended</h3>
+                  <p>This auction closed on ${endDate.toLocaleString()}</p>
+                </div>
+              </div>
+            `);
+          } else {
+            bidFormContainer.insertAdjacentHTML('afterbegin', `
+              <div class="auction-message inactive">
+                <div class="auction-message-icon">⛔</div>
+                <div class="auction-message-content">
+                  <h3>Auction Is Not Active</h3>
+                  <p>This auction is currently not accepting bids.</p>
+                </div>
+              </div>
+            `);
+          }
+        }
+
+        // Set up countdown timer if needed
+        if (countdownTarget) {
+          const countdownElement = document.getElementById('auctionCountdown');
+          
+          function updateCountdown() {
+            const now = new Date();
+            const distance = countdownTarget - now;
+            
+            if (distance < 0) {
+              // Time is up, refresh the page to update status
+              clearInterval(timerInterval);
+              location.reload();
+              return;
+            }
+            
+            // Calculate time units
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            // Display countdown
+            countdownElement.innerHTML = `
+              <div class="countdown-label">${countdownMessage}</div>
+              <div class="countdown-timer">
+                <div class="countdown-unit">
+                  <span class="countdown-value">${days}</span>
+                  <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-unit">
+                  <span class="countdown-value">${hours}</span>
+                  <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-unit">
+                  <span class="countdown-value">${minutes}</span>
+                  <span class="countdown-label">Minutes</span>
+                </div>
+                <div class="countdown-unit">
+                  <span class="countdown-value">${seconds}</span>
+                  <span class="countdown-label">Seconds</span>
+                </div>
+              </div>
+            `;
+          }
+          
+          updateCountdown(); // Run once immediately
+          const timerInterval = setInterval(updateCountdown, 1000); // Then every second
+        }
+        
+        // Set up bid form submission
+        bidForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          
+          const bidAmount = parseInt(document.getElementById('bidAmount').value);
+          const fullName = document.getElementById('fullName').value;
+          const email = document.getElementById('email').value;
+          const phoneNumber = document.getElementById('phoneNumber').value;
+          const agreementConfirmed = document.getElementById('agreementConfirmed').checked;
+          
+          // Emit socket event to place the bid
+          socket.emit('newBid', {
+            duckId,
+            fullName,
+            email,
+            phoneNumber,
+            amount: bidAmount,
+            agreementConfirmed
+          });
+        });
+        
+      } catch (error) {
+        console.error('Error:', error);
+        mainContent.innerHTML = `
+          <div style="text-align: center; padding: 2rem;">
+            <h2>Duck Not Found</h2>
+            <p>Sorry, the duck you're looking for could not be found.</p>
+            <a href="/" class="bid-button" style="display: inline-block; max-width: 200px; margin-top: 1rem;">
+              Return to Gallery
+            </a>
+          </div>
+        `;
+      }
+    });
+    
+    // Function to change main image when clicking on thumbnails
+    function changeMainImage(thumbnail) {
+      // Update main image
+      document.getElementById('mainImage').src = thumbnail.getAttribute('data-image');
+      
+      // Update active thumbnail
+      document.querySelectorAll('.thumbnail').forEach(thumb => {
+        thumb.classList.remove('active');
+      });
+      thumbnail.classList.add('active');
+    }
+  </script>
+</body>
+</html>

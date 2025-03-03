@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Duck - Admin Dashboard</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .admin-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+    }
+    
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+    
+    .admin-header h2 {
+      font-family: var(--font-heading);
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+    
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-family: var(--font-body);
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background-color: var(--primary-light);
+    }
+    
+    .btn-success {
+      background-color: var(--accent-color);
+      color: white;
+    }
+    
+    .btn-success:hover {
+      background-color: #2e7d32;
+    }
+    
+    .btn-warning {
+      background-color: #f57c00;
+      color: white;
+    }
+    
+    .btn-warning:hover {
+      background-color: #ef6c00;
+    }
+    
+    .form-container {
+      background-color: var(--bg-white);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      padding: 2rem;
+    }
+    
+    .form-title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--primary-color);
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-body);
+      transition: border-color 0.2s ease;
+    }
+    
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    textarea {
+      height: 150px;
+      resize: vertical;
+      line-height: 1.5;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    
+    input[type="checkbox"] {
+      margin-top: 0.25rem;
+    }
+    
+    .image-preview-container {
+      margin-top: 1rem;
+    }
+    
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .preview-item {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .preview-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .remove-image {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 16px;
+      color: #d32f2f;
+      transition: all 0.2s ease;
+    }
+    
+    .remove-image:hover {
+      background-color: rgba(255, 255, 255, 0.9);
+      transform: scale(1.1);
+    }
+    
+    .existing-images-container {
+      margin-bottom: 1.5rem;
+    }
+    
+    .existing-images-title {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-dark);
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    
+    .error-message {
+      color: #d32f2f;
+      margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+    
+    .input-hint {
+      margin-top: 0.25rem;
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+    
+    .loading-container {
+      text-align: center;
+      padding: 3rem;
+    }
+    
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid var(--primary-color);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      animation: spin 1s linear infinite;
+    }
+    
+    .time-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    @media (max-width: 600px) {
+      .time-inputs {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    .datetime-input {
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      transition: border-color 0.2s ease;
+      font-family: var(--font-body);
+    }
+    
+    .datetime-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+    
+    .error-banner {
+      background-color: #ffebee;
+      color: #b71c1c;
+      padding: 0.75rem;
+      border-radius: var(--radius-sm);
+      margin-bottom: 1rem;
+      border-left: 4px solid #b71c1c;
+      display: none;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .error-container {
+      text-align: center;
+      padding: 2rem;
+      background-color: #ffebee;
+      border-radius: var(--radius-md);
+      margin-bottom: 2rem;
+    }
+    
+    .error-container h3 {
+      color: #c62828;
+      margin-bottom: 0.5rem;
+      font-family: var(--font-heading);
+      font-weight: 600;
+    }
+    
+    @media (max-width: 768px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .form-actions {
+        flex-direction: column;
+      }
+      
+      .btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ducker Art Trail Ducks Auction</h1>
+    <p>Admin Dashboard - Edit Duck</p>
+  </header>
+  
+  <main class="admin-container" id="mainContent">
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <p>Loading duck information...</p>
+    </div>
+  </main>
+  
+  <footer>
+    <p>&copy; 2025 Harrow International School. All proceeds go to charity.</p>
+  </footer>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Get duck ID from URL
+      const duckId = window.location.pathname.split('/').pop();
+      const mainContent = document.getElementById('mainContent');
+      
+      // Track existing images
+      let existingImages = [];
+      
+      // Fetch duck data
+      try {
+        const response = await fetch(`/api/ducks/${duckId}`);
+        if (!response.ok) {
+          throw new Error('Duck not found');
+        }
+        
+        const duck = await response.json();
+        renderForm(duck);
+      } catch (error) {
+        console.error('Error:', error);
+        mainContent.innerHTML = `
+          <div class="admin-header">
+            <h2>Error</h2>
+            <a href="/admin/manage-ducks" class="btn btn-primary">Back to Duck Management</a>
+          </div>
+          <div class="error-container">
+            <h3>Duck Not Found</h3>
+            <p>The duck you're trying to edit could not be found.</p>
+          </div>
+        `;
+      }
+      
+      // Render form with duck data
+      function renderForm(duck) {
+        existingImages = [...duck.images];
+        
+        mainContent.innerHTML = `
+          <div class="admin-header">
+            <h2>Edit Duck: ${duck.name}</h2>
+            <a href="/admin/manage-ducks" class="btn btn-primary">Back to Duck Management</a>
+          </div>
+          
+          <div class="form-container">
+            <h3 class="form-title">Duck Information</h3>
+            
+            <div class="error-banner" id="formErrorBanner"></div>
+            
+            <form id="editDuckForm" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="name">Duck Name *</label>
+                <input type="text" id="name" name="name" value="${duck.name}" required>
+                <div id="nameError" class="error-message"></div>
+              </div>
+              
+              <div class="form-group">
+                <label for="description">Description *</label>
+                <textarea id="description" name="description" required>${duck.description}</textarea>
+                <div id="descriptionError" class="error-message"></div>
+                <div class="input-hint">Provide a detailed description of the duck, including its design and special features.</div>
+              </div>
+              
+              <div class="form-group">
+                <label for="startingBid">Starting Bid (HK$) *</label>
+                <input type="number" id="startingBid" name="startingBid" min="1" step="1" value="${duck.startingBid}" required>
+                <div id="startingBidError" class="error-message"></div>
+                <div class="input-hint">Set the minimum starting bid amount in Hong Kong Dollars.</div>
+              </div>
+              
+              <div class="form-group">
+                <label>Auction Time Period *</label>
+                <div class="time-inputs">
+                  <div>
+                    <label for="auctionStart">Start Date & Time</label>
+                    <input type="datetime-local" id="auctionStart" name="auctionStart" class="datetime-input" required>
+                    <div id="auctionStartError" class="error-message"></div>
+                  </div>
+                  <div>
+                    <label for="auctionEnd">End Date & Time</label>
+                    <input type="datetime-local" id="auctionEnd" name="auctionEnd" class="datetime-input" required>
+                    <div id="auctionEndError" class="error-message"></div>
+                  </div>
+                </div>
+                <div class="input-hint">Set when the auction will start and end. Bidding will only be allowed during this time period.</div>
+              </div>
+              
+              <div class="existing-images-container">
+                <div class="existing-images-title">Current Images:</div>
+                <div class="input-hint">Click on the X to remove an image. At least one image must remain.</div>
+                <div id="existingImagesPreview" class="image-preview"></div>
+              </div>
+              
+              <div class="form-group">
+                <label for="newImages">Add New Images (max 5 total)</label>
+                <input type="file" id="newImages" name="newImages" accept="image/*" multiple>
+                <div id="imagesError" class="error-message"></div>
+                <div class="input-hint">Recommended image size: 1200 x 800 pixels. Maximum file size: 5MB per image.</div>
+                
+                <div class="image-preview-container">
+                  <p>New Images Preview:</p>
+                  <div id="newImagePreview" class="image-preview"></div>
+                </div>
+              </div>
+              
+              <div class="form-group checkbox-group">
+                <input type="checkbox" id="active" name="active" ${duck.active ? 'checked' : ''}>
+                <label for="active">Make this duck active (visible to bidders)</label>
+              </div>
+              
+              <div class="form-actions">
+                <button type="button" id="cancelBtn" class="btn btn-warning">Cancel</button>
+                <button type="submit" class="btn btn-success">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        `;
+        
+        // Initialize date-time fields with duck's auction times
+        const startDate = new Date(duck.auctionStart || Date.now());
+        const endDate = new Date(duck.auctionEnd || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+        
+        // Format the dates for datetime-local input (YYYY-MM-DDTHH:MM)
+        document.getElementById('auctionStart').value = startDate.toISOString().slice(0, 16);
+        document.getElementById('auctionEnd').value = endDate.toISOString().slice(0, 16);
+        
+        // Show existing images
+        displayExistingImages();
+        
+        // Add event listeners
+        const formErrorBanner = document.getElementById('formErrorBanner');
+        const newImagesInput = document.getElementById('newImages');
+        const newImagePreview = document.getElementById('newImagePreview');
+        const editDuckForm = document.getElementById('editDuckForm');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const auctionStartInput = document.getElementById('auctionStart');
+        const auctionEndInput = document.getElementById('auctionEnd');
+        
+        // Ensure end time is after start time
+        auctionStartInput.addEventListener('change', () => {
+          const startTime = new Date(auctionStartInput.value);
+          const endTime = new Date(auctionEndInput.value);
+          
+          if (endTime <= startTime) {
+            // Set end time to 1 day after start time
+            const newEndTime = new Date(startTime);
+            newEndTime.setDate(startTime.getDate() + 1);
+            auctionEndInput.value = newEndTime.toISOString().slice(0, 16);
+          }
+          
+          validateTimes();
+        });
+        
+        auctionEndInput.addEventListener('change', validateTimes);
+        
+        function validateTimes() {
+          const startTime = new Date(auctionStartInput.value);
+          const endTime = new Date(auctionEndInput.value);
+          
+          // Clear previous errors
+          document.getElementById('auctionStartError').textContent = '';
+          document.getElementById('auctionEndError').textContent = '';
+          
+          // Validate end time
+          if (endTime <= startTime) {
+            document.getElementById('auctionEndError').textContent = 'End time must be after start time';
+          }
+        }
+        
+        // Preview new images
+        newImagesInput.addEventListener('change', () => {
+          // Clear previous previews
+          newImagePreview.innerHTML = '';
+          
+          const totalImages = existingImages.length + newImagesInput.files.length;
+          
+          if (totalImages > 5) {
+            document.getElementById('imagesError').textContent = 
+              `You can only have up to 5 images in total. You currently have ${existingImages.length} existing images.`;
+            newImagesInput.value = '';
+            return;
+          }
+          
+          document.getElementById('imagesError').textContent = '';
+          
+          if (newImagesInput.files.length === 0) {
+            return;
+          }
+          
+          // Create preview for each selected file
+          Array.from(newImagesInput.files).forEach((file, index) => {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+              const previewItem = document.createElement('div');
+              previewItem.className = 'preview-item';
+              
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'preview-image';
+              img.alt = `New Preview ${index + 1}`;
+              
+              previewItem.appendChild(img);
+              newImagePreview.appendChild(previewItem);
+            }
+            
+            reader.readAsDataURL(file);
+          });
+        });
+        
+        // Form submission
+        editDuckForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          
+          // Clear previous errors
+          document.getElementById('nameError').textContent = '';
+          document.getElementById('descriptionError').textContent = '';
+          document.getElementById('startingBidError').textContent = '';
+          document.getElementById('auctionStartError').textContent = '';
+          document.getElementById('auctionEndError').textContent = '';
+          document.getElementById('imagesError').textContent = '';
+          formErrorBanner.style.display = 'none';
+          
+          // Validate form
+          let isValid = true;
+          const nameInput = document.getElementById('name');
+          const descriptionInput = document.getElementById('description');
+          const startingBidInput = document.getElementById('startingBid');
+          
+          if (!nameInput.value.trim()) {
+            document.getElementById('nameError').textContent = 'Duck name is required';
+            isValid = false;
+          }
+          
+          if (!descriptionInput.value.trim()) {
+            document.getElementById('descriptionError').textContent = 'Description is required';
+            isValid = false;
+          }
+          
+          if (!startingBidInput.value || startingBidInput.value < 1) {
+            document.getElementById('startingBidError').textContent = 'Starting bid must be at least HK$1';
+            isValid = false;
+          }
+          
+          // Validate time inputs
+          const startTime = new Date(auctionStartInput.value);
+          const endTime = new Date(auctionEndInput.value);
+          
+          if (!auctionStartInput.value) {
+            document.getElementById('auctionStartError').textContent = 'Auction start time is required';
+            isValid = false;
+          }
+          
+          if (!auctionEndInput.value) {
+            document.getElementById('auctionEndError').textContent = 'Auction end time is required';
+            isValid = false;
+          } else if (endTime <= startTime) {
+            document.getElementById('auctionEndError').textContent = 'End time must be after start time';
+            isValid = false;
+          }
+          
+          if (existingImages.length === 0 && (!newImagesInput.files || newImagesInput.files.length === 0)) {
+            document.getElementById('imagesError').textContent = 'At least one image is required';
+            isValid = false;
+          }
+          
+          const totalImages = existingImages.length + (newImagesInput.files ? newImagesInput.files.length : 0);
+          if (totalImages > 5) {
+            document.getElementById('imagesError').textContent = 'You can only have up to 5 images in total';
+            isValid = false;
+          }
+          
+          if (!isValid) {
+            formErrorBanner.textContent = 'Please fix the errors in the form before submitting.';
+            formErrorBanner.style.display = 'block';
+            return;
+          }
+          
+          // Create form data
+          const formData = new FormData();
+          formData.append('name', nameInput.value.trim());
+          formData.append('description', descriptionInput.value.trim());
+          formData.append('startingBid', startingBidInput.value);
+          formData.append('auctionStart', startTime.toISOString());
+          formData.append('auctionEnd', endTime.toISOString());
+          formData.append('active', document.getElementById('active').checked);
+          
+          // Add existing images
+          existingImages.forEach(image => {
+            formData.append('existingImages', image);
+          });
+          
+          // Add new images
+          if (newImagesInput.files && newImagesInput.files.length > 0) {
+            Array.from(newImagesInput.files).forEach(file => {
+              formData.append('newImages', file);
+            });
+          }
+          
+          try {
+            const response = await fetch(`/api/admin/ducks/${duckId}`, {
+              method: 'PUT',
+              body: formData
+            });
+            
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Failed to update duck');
+            }
+            
+            alert('Duck updated successfully!');
+            window.location.href = '/admin/manage-ducks';
+          } catch (error) {
+            console.error('Error:', error);
+            formErrorBanner.textContent = error.message || 'Failed to update duck. Please try again.';
+            formErrorBanner.style.display = 'block';
+          }
+        });
+        
+        // Cancel button
+        cancelBtn.addEventListener('click', () => {
+          window.location.href = '/admin/manage-ducks';
+        });
+      }
+      
+      // Display existing images with remove option
+      function displayExistingImages() {
+        const existingImagesPreview = document.getElementById('existingImagesPreview');
+        existingImagesPreview.innerHTML = '';
+        
+        if (existingImages.length === 0) {
+          existingImagesPreview.innerHTML = '<p>No existing images</p>';
+          return;
+        }
+        
+        existingImages.forEach((image, index) => {
+          const previewItem = document.createElement('div');
+          previewItem.className = 'preview-item';
+          
+          const img = document.createElement('img');
+          img.src = image;
+          img.className = 'preview-image';
+          img.alt = `Image ${index + 1}`;
+          
+          const removeBtn = document.createElement('div');
+          removeBtn.className = 'remove-image';
+          removeBtn.textContent = '×';
+          removeBtn.addEventListener('click', () => {
+            // Prevent removing the last image
+            if (existingImages.length <= 1) {
+              document.getElementById('imagesError').textContent = 'You must have at least one image';
+              return;
+            }
+            
+            existingImages = existingImages.filter(img => img !== image);
+            displayExistingImages();
+            document.getElementById('imagesError').textContent = '';
+          });
+          
+          previewItem.appendChild(img);
+          previewItem.appendChild(removeBtn);
+          existingImagesPreview.appendChild(previewItem);
+        });
+      }
+    });
+  </script>
+</body>
+</html>
