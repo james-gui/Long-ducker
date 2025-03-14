@@ -51,7 +51,14 @@ const adminAuth = basicAuth({
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+
+app.use(express.static(path.join(__dirname + '/public/'), {
+  setHeaders: (res, path) => {
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    }
+  }
+}));
 
 // MongoDB connection (optional)
 // If not using MongoDB, comment this out or wrap in a conditional
@@ -413,6 +420,10 @@ app.get('/', (req, res) => {
 
 app.get('/duck/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'duck.html'));
+});
+
+app.get('/about.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'about.html'));
 });
 
 app.get('/admin', adminAuth, (req, res) => {

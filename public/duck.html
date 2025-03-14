@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Duck Details - Ducker Art Trail</title>
   <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/menu.js"></script>
   <style>
     .container {
       max-width: 1200px;
@@ -408,9 +409,27 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Ducker Art Trail Ducks Auction</h1>
-    <p>Find the perfect duck and place your bid!</p>
+  <header class="site-header">
+    <div class="header-container">
+      <div class="logo-container">
+        <a href="/">
+          <img src="/uploads/logo.png" alt="Rubber Duck Auction Logo" class="site-logo">
+        </a>
+      </div>
+      
+      <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+      
+      <nav class="main-nav">
+        <ul class="nav-list">
+          <li><a href="/" class="nav-link">Home</a></li>
+          <li><a href="/about.html" class="nav-link">About</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
   
   <main class="container" id="main-content">
