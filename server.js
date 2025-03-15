@@ -1,5 +1,5 @@
 // Server.js - Complete file with time constraint modifications
-
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -62,24 +62,39 @@ app.use(express.static(path.join(__dirname + '/public/'), {
 
 // MongoDB connection (optional)
 // If not using MongoDB, comment this out or wrap in a conditional
-// mongoose.connect('mongodb://localhost:27017/duck-auction', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-// .then(() => console.log('MongoDB connected'))
-// .catch(err => console.error('MongoDB connection error:', err));
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log('Connected to MongoDB Atlas');
+    
+    // Import routes AFTER connection is established
+    // This ensures models are imported when the DB is connected    
+    // Use routes    
+    // Start server
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1);
+  });
 
 // Import MongoDB models (if using MongoDB)
-const Duck = mongoose.connection.readyState === 1 ? require('./models/duck') : null;
-const Bid = mongoose.connection.readyState === 1 ? require('./models/bid') : null;
+//const Duck = mongoose.connection.readyState === 1 ? require('./models/duck') : null;
+//const Bid = mongoose.connection.readyState === 1 ? require('./models/bid') : null;
+
+
+
 
 // In-memory storage (if not using MongoDB)
-const ducks = [];
-const bids = [];
+//const ducks = [];
+//const bids = [];
 
 // Routes
 
 // Get all ducks
+
+//importing models!
+const Duck = require('./models/duck');
+const Bid = require('./models/bid');
+
 app.get('/api/ducks', async (req, res) => {
   try {
     let ducksData;
