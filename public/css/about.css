@@ -140,6 +140,26 @@
     gap: 2rem;
 }
 
+.socials-container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
+}
+
+/*phone only*/
+@media only screen and (max-width: 600px) {
+    .socials-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 2rem;
+        flex-direction:row;
+    }
+}
+
+
 .team-member {
     background-color: #fff;
     padding: 2rem;
@@ -149,7 +169,34 @@
     transition: transform 0.3s ease;
 }
 
+.aboutme {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    transition: transform 0.3s ease;
+}
+
+.favicon {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    width: 150px;
+    height: 150px;
+    transition: transform 0.3s ease;
+}
+
+.favicon:hover {
+    transform: translateY(-8px);
+}
+
 .team-member:hover {
+    transform: translateY(-8px);
+}
+
+.aboutme:hover {
     transform: translateY(-8px);
 }
 
@@ -160,6 +207,7 @@
     margin: 0 auto 1.5rem;
     background-size: cover;
     background-position: center;
+    display: flex;
 }
 
 .member-photo.founder {

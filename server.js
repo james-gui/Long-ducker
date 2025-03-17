@@ -43,7 +43,7 @@ const upload = multer({
 
 // Basic authentication for admin routes
 const adminAuth = basicAuth({
-  users: { 'admin': 'password' }, // Change this in production!
+  users: { 'admin': process.env.adminpassword }, // Change this in production!
   challenge: true,
   realm: 'Duck Auction Admin'
 });
